@@ -5,7 +5,7 @@ require 'relax'
 
 module NECO
   class API < Relax::Service
-    endpoint 'http://localhost:3000/v1', :authenticator => :http_basic do
+    endpoint 'http://:host/v1', :authenticator => :http_basic do
       defaults do
         parameter :per_page
         parameter :page
@@ -13,107 +13,99 @@ module NECO
 
       action :categories, :url => '/catalog/categories.xml' do
         parser :xml do
-          element :categories do
-            elements :category do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'parent-id', :type => Integer
-              element 'name'
-              element 'level', :type => Integer
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'category', :as => :categories do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'parent-id', :type => Integer
+            element 'name'
+            element 'level', :type => Integer
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
 
       action :events, :url => '/catalog/events.xml' do
         parser :xml do
-          element :events do
-            elements :event do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'category-id', :type => Integer
-              element 'venue-id', :type => Integer
-              element 'venue-configuration-id', :type => Integer
-              element 'name'
-              element 'occurs-at', :type => DateTime
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'event', :as => :events do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'category-id', :type => Integer
+            element 'venue-id', :type => Integer
+            element 'venue-configuration-id', :type => Integer
+            element 'name'
+            element 'occurs-at', :type => Time
+            element 'occurs-at', :as => 'occurs-at-raw'
+            elements 'performer-id', :as => 'performer-ids', :type => Integer
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
 
       action :performers, :url => '/catalog/performers.xml' do
         parser :xml do
-          element :performers do
-            elements :performer do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'venue-id', :type => Integer
-              element 'name'
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'performer', :as => :performers do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'venue-id', :type => Integer
+            element 'name'
+            element 'sales-percent', :type => Float
+            elements 'category-id', :as => 'category-ids', :type => Integer
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
 
-      action :tickets, :url => '/catalog/tickets.xml' do
+      action :tickets, :url => '/catalog/events/:event_id/tickets.xml' do
         parser :xml do
-          element :tickets do
-            elements :ticket do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'event-id', :type => Integer
-              element 'price', :type => Float
-              element 'quantity', :type => Integer
-              element 'section'
-              element 'row'
-              element 'notes'
-              elements 'splits' do
-                element 'split', :type => Integer
-              end
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'ticket', :as => :tickets do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'event-id', :type => Integer
+            element 'price', :type => Float
+            element 'quantity', :type => Integer
+            element 'section'
+            element 'row'
+            element 'notes'
+            elements 'split', :as => 'splits', :type => Integer
+            element 'is-mine'
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
 
       action :venues, :url => '/catalog/venues.xml' do
         parser :xml do
-          element :venues do
-            elements :venue do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'name'
-              element 'street-address'
-              element 'extended-address'
-              element 'locality'
-              element 'region'
-              element 'postal-code'
-              element 'country-code'
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'venue', :as => :venues do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'name'
+            element 'street-address'
+            element 'extended-address'
+            element 'locality'
+            element 'region'
+            element 'postal-code'
+            element 'country-code'
+            element 'country-name'
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
 
-      action :venue_configurations, :url => '/catalog/venue_configurations.xml' do
+      action :configurations, :url => '/catalog/venues/:venue_id/venue_configurations.xml' do
         parser :xml do
-          element :venue_configurations do
-            elements :venue_configuration do
-              element 'id', :type => Integer
-              element 'ticket-network-id', :type => Integer
-              element 'venue-id', :type => Integer
-              element 'name'
-              element 'image-url'
-              element 'created-at', :type => DateTime
-              element 'updated-at', :type => DateTime
-            end
+          elements 'venue-configuration', :as => :configurations do
+            element 'id', :type => Integer
+            element 'ticket-network-id', :type => Integer
+            element 'venue-id', :type => Integer
+            element 'name'
+            element 'image-url'
+            element 'created-at', :type => Time
+            element 'updated-at', :type => Time
           end
         end
       end
