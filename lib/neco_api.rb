@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'relax', '~> 0.1.1'
+gem 'relax', '~> 0.1.3'
 require 'relax'
 
 module NECO

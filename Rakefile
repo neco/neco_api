@@ -12,7 +12,7 @@ begin
     gem.homepage = "http://github.com/neco/neco_api"
     gem.authors = ["Tyler Hunt"]
 
-    gem.add_dependency('relax', '~> 0.1.1')
+    gem.add_dependency('relax', '~> 0.1.3')
 
     gem.add_development_dependency('jeweler', '~> 0.11.0')
     gem.add_development_dependency('rspec', '~> 1.2.2')
