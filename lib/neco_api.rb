@@ -4,6 +4,23 @@ gem 'relax', '~> 0.1.1'
 require 'relax'
 
 module NECO
+  class Error < StandardError ; end
+  class NotReady < Error ; end
+
+  class TicketParser
+    def initialize(options={}, &block)
+      @parser = Relief::Parser.new(:xml, options, &block)
+    end
+
+    def parse(content)
+      if content.code == 202
+        raise NotReady
+      else
+        @parser.parse(content)
+      end
+    end
+  end
+
   class API < Relax::Service
     endpoint 'http://:host/v1', :authenticator => :http_basic do
       defaults do
@@ -59,20 +76,19 @@ module NECO
       end
 
       action :tickets, :url => '/catalog/events/:event_id/tickets.xml' do
-        parser :xml do
+        parser TicketParser do
           elements 'ticket', :as => :tickets do
-            element 'id', :type => Integer
-            element 'ticket-network-id', :type => Integer
-            element 'event-id', :type => Integer
-            element 'price', :type => Float
-            element 'quantity', :type => Integer
-            element 'section'
-            element 'row'
-            element 'notes'
-            elements 'split', :as => 'splits', :type => Integer
-            element 'is-mine'
-            element 'created-at', :type => Time
-            element 'updated-at', :type => Time
+            element 'id', :as => :id, :type => Integer
+            element 'event-id', :as => :event_id, :type => Integer
+            element 'price', :as => :price, :type => Float
+            element 'quantity', :as => :quantity, :type => Integer
+            element 'section', :as => :section
+            element 'row', :as => :row
+            element 'parking-pass', :as => :parking_pass
+            element 'lot', :as => :lot
+            element 'notes', :as => :notes
+            elements 'split', :as => :splits, :type => Integer
+            element 'is-mine', :as => :is_mine
           end
         end
       end
